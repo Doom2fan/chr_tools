@@ -1,0 +1,29 @@
+{
+    "name": "chr_tools",
+    "version": "1.0.0",
+    "description": "A bunch of useful modules written by Chronos Ouroboros",
+    "copyright": "Copyright (C) 2016  Chronos Ouroboros",
+    "authors": ["Chronos Ouroboros"],
+    "license": "GPL-2.0",
+    "targetType": "library",
+    "importPaths": [ "src" ],
+
+    "configurations": [
+        {
+            "name": "default",
+            "targetType": "library",
+        },
+        {
+            "name": "docs",            
+            "targetType": "autodetect",
+            "targetPath": "docs",
+            "buildOptions": [ "syntaxOnly" ],
+            "dflags": [ "-Dddocs" ],
+            "postBuildCommands-windows": [ "xcopy /D /E /C /I  ddoc\\candydoc docs\\candydoc" ],
+            "postBuildCommands-posix": [ "cp -ru ddoc/candydoc docs/" ],
+
+            "sourceFiles": [ "ddoc/candydoc/candy.ddoc", "ddoc/candydoc/modules.ddoc" ],
+            "copyFiles": [ "ddoc/candydoc" ],
+        }
+    ]
+}

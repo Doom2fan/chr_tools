@@ -1,0 +1,4 @@
+MODULES = 
+    $(MODULE chr_tools.sort)
+    $(MODULE chr_tools.fixedpoint)
+    $(MODULE chr_tools.stack)

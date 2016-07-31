@@ -1,0 +1,4 @@
+-w
+-g
+-debug
+-ofDebug\chr_tools.lib

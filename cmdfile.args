@@ -1,0 +1,8 @@
+-lib
+-IC:\D\dmd2\src\phobos
+-IC:\D\dmd2\src\druntime\import
+-IC:\prog\D\Libraries\chr_tools\src
+-Isrc\
+
+src\chr_tools\stack.d
+src\chr_tools\sort.d

@@ -1,0 +1,4 @@
+-w
+-O
+-release
+-ofRelease\chr_tools.lib
