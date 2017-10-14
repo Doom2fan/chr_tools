@@ -35,7 +35,7 @@ static struct FixedMath {
     
     // Trig functions
     static T abs (T) (T x) {
-        return x._value < 0 ? -x._value : x._value;
+        return cast (T) (x._value < 0 ? -x._value : x._value);
     }
 
     static uint toBAM (T) (T val) if (is (TemplateOf!(T) == Fixed)) {
@@ -116,7 +116,7 @@ protected:
 public:
     @property pure nothrow real toReal () const { return cast (real) this; }
     alias toReal this;
-    /*@property pure nothrow real toBool () { return cast (bool) this; }
+    /*@property pure nothrow bool toBool () { return cast (bool) this; }
     alias toBool this;*/
 
     static pure nothrow Fixed!(T2, _precisionBits) makeFixed (T2 : int, uint _precisionBits) (T2 _value) {
@@ -188,20 +188,8 @@ public:
     ** Constructors
     **
     */
-    // Unsigned integers types:
-    this (ubyte  newVal) { this._value = convertInteger!(T, ubyte)  (_scale, newVal); }
-    this (ushort newVal) { this._value = convertInteger!(T, ushort) (_scale, newVal); }
-    this (uint   newVal) { this._value = convertInteger!(T, uint)   (_scale, newVal); }
-    this (ulong  newVal) { this._value = convertInteger!(T, ulong)  (_scale, newVal); }
-    // Signed integer types:
-    this (byte  newVal) { this._value = convertInteger!(T, byte)  (_scale, newVal); }
-    this (short newVal) { this._value = convertInteger!(T, short) (_scale, newVal); }
-    this (int   newVal) { this._value = convertInteger!(T, int)   (_scale, newVal); }
-    this (long  newVal) { this._value = convertInteger!(T, long)  (_scale, newVal); }
-    // Floating-point types:
-    this (real newVal) {
-        this._value = cast (T) (newVal * _frac);
-    }
+    this (T2 :  byte) (T2 newVal) { this._value = convertInteger!(T, T2)  (_scale, newVal); }
+    this (T2 : float) (T2 newVal) { this._value = cast (T) (newVal * _frac); }
 
     /*
     **
@@ -236,7 +224,7 @@ public:
         } else if (op == "%")
             return makeFixed!(T, _precisionBits) (cast (T) mixin ("((this._value / this._frac) " ~ op ~ " (cast (real) rhs._value / rhs._frac)) * this._frac"));
         else if (op == "*" || op == "/" || op == "&" || op == "^" || op == "|" || op == ">>" || op == "<<" || op == ">>>")
-            return makeFixed!(T, _precisionBits) (cast (T) mixin ("this._value " ~ op ~ " (cast (real) rhs._value / rhs._frac)"));
+            return makeFixed!(T, _precisionBits) (cast (T) mixin ("this._value " ~ op ~ " ((cast (real) rhs._value) / rhs._frac)"));
     }
     private nothrow Fixed intBinaryOps (T2, string op) (T2 rhs) {
         static if (op == "+" || op == "-")
@@ -246,10 +234,8 @@ public:
         else if (op == "*" || op == "/" || op == "&" || op == "^" || op == "|" || op == ">>" || op == "<<" || op == ">>>")
             return makeFixed!(T, _precisionBits) (cast (T) mixin ("this._value " ~ op ~ " cast (T) rhs"));
     }
-    // Unsigned integer binary ops:
-    pure nothrow Fixed opBinary (string op, T2 : ubyte) (T2 rhs) { return intBinaryOps!(T2,  op) (rhs); }
-    // Signed integer binary ops:
-    pure nothrow Fixed opBinary (string op, T2 : byte) (T2 rhs) { return intBinaryOps!(T2,  op) (rhs); }
+    // Integer binary ops:
+    pure nothrow Fixed opBinary (string op, T2 :  byte) (T2 rhs) { return intBinaryOps!(T2,  op) (rhs); }
     // Floating point ops:
     pure nothrow Fixed opBinary (string op, T2 : float) (T2 rhs) { return intBinaryOps!(T2,  op) (rhs); }
 
@@ -268,12 +254,10 @@ public:
 
         return this;
     }
-    // Unsigned integer op assignments:
-    pure nothrow Fixed opAssign (T2 : ubyte) (T2 rhs) { this._value = cast (T) (rhs * _frac); return this; }
-    // Signed integer op assignments:
-    pure nothrow Fixed opAssign (T2 : byte) (T2  rhs) { this._value = cast (T) (rhs * _frac); return this; }
+    // Integer op assignments:
+    pure nothrow Fixed opAssign (T2 :  byte) (T2 rhs) { this._value = cast (T) (rhs * _frac); return this; }
     // Floating point assignments:
-    pure nothrow Fixed opAssign (T2 : float) (T2  rhs) { this._value = cast (T) (rhs * _frac); return this; }
+    pure nothrow Fixed opAssign (T2 : float) (T2 rhs) { this._value = cast (T) (rhs * _frac); return this; }
 
     /*
     **
@@ -289,7 +273,7 @@ public:
         } else if (op == "%")
             this._value = cast (T) mixin ("((this._value / this._frac) " ~ op ~ " (cast (real) rhs._value / rhs._frac)) * this._frac");
         else if (op == "*" || op == "/" || op == "&" || op == "^" || op == "|" || op == ">>" || op == "<<" || op == ">>>")
-            this._value = cast (T) mixin ("this._value " ~ op ~ " (cast (real) rhs._value / rhs._frac)");
+            this._value = cast (T) mixin ("this._value " ~ op ~ " ((cast (real) rhs._value) / rhs._frac)");
 
         return this;
     }
@@ -303,39 +287,72 @@ public:
 
         return this;
     }
-    // Unsigned integer op assignments:
-    pure nothrow Fixed opOpAssign (string op, T2 : ubyte) (T2 rhs) { intAssignOps!(T2,  op) (rhs); return this; }
-    // Signed integer op assignments:
-    pure nothrow Fixed opOpAssign (string op, T2 : byte) (T2 rhs) { intAssignOps!(T2,  op) (rhs); return this; }
+    // Integer op assignments:
+    pure nothrow Fixed opOpAssign (string op, T2 :  byte) (T2 rhs) { intAssignOps!(T2,  op) (rhs); return this; }
     // Floating point op assignments:
     pure nothrow Fixed opOpAssign (string op, T2 : float) (T2 rhs) { intAssignOps!(T2,  op) (rhs); return this; }
+
+    /*
+    **
+    ** Comparison
+    **
+    */
+    pure nothrow bool opEquals (T2 : Fixed) (auto ref const T2 rhs) const {
+        static if (is (typeof (rhs._value) == T2)) {
+            return this._value == rhs._value;
+        } else {
+            return this._value == ((cast (real) rhs._value / rhs._frac) * this._frac);
+        }
+    }
+    // Integer equality comparison
+    pure nothrow bool opEquals (T2 :  byte) (auto ref const T2 rhs) const { return (this._value == (cast (T) (rhs * _frac))); }
+    // Floating point equality comparison:
+    pure nothrow bool opEquals (T2 : float) (auto ref const T2 rhs) const { return (this._value == (cast (T) (rhs * _frac))); }
+    // Inequality comparison:
+    pure nothrow int opCmp (T2 : Fixed) (auto ref const T2 rhs) const {
+        static if (rhs._scale == _scale) {
+            if      (this._value < rhs._value) return -1;
+            else if (this._value > rhs._value) return  1;
+            else return 0;
+        } else {
+            T rhsVal = ((cast (real) rhs._value / rhs._frac) * this._frac);
+            if      (this._value < rhsVal) return -1;
+            else if (this._value > rhsVal) return  1;
+            else return 0;
+        }
+    }
+    // Integer inequality comparison:
+    pure nothrow int opCmp (T2 : byte) (auto ref const T2 rhs) const {
+        T rhsVal = cast (T) (rhs * _frac);
+        if      (this._value < rhsVal) return -1;
+        else if (this._value > rhsVal) return  1;
+        else return 0;
+    }
+    // Floating point inequality comparison:
+    pure nothrow int opCmp (T2 : float) (auto ref const T2 rhs) const {
+        T rhsVal = cast (T) (rhs * _frac);
+        if      (this._value < rhsVal) return -1;
+        else if (this._value > rhsVal) return  1;
+        else return 0;
+    }
 
     /*
     **
     ** Casting
     **
     */
-    // Signed integer casting:
-    pure nothrow T2 opCast (T2 : int) () const {
+    pure nothrow T2 opCast (T2 : byte) () const {
         return cast (T2) (this._value / this._frac);
     }
-
     pure nothrow T2 opCast (T2 : float) () const {
         return cast (T2) ((cast (T2) this._value) / this._frac);
     }
-
     pure nothrow T2 opCast (T2 : bool) () const {
         return this._value >= 0;
     }
 
-
-
-    // Unsigned integer casting:
-
     // String
-    @property string asString () const { return toString (); }
-
-    string toString () const {
+    string toString () {
         return format ("%.22f", cast (double) _value / _frac);
     }
 }
