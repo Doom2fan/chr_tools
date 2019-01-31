@@ -208,6 +208,8 @@ public:
             this._value -= _frac;
             return this;
         }
+
+        assert (0);
     }
 
     /*
@@ -225,6 +227,8 @@ public:
             return makeFixed!(T, _precisionBits) (cast (T) mixin ("((this._value / this._frac) " ~ op ~ " (cast (real) rhs._value / rhs._frac)) * this._frac"));
         else if (op == "*" || op == "/" || op == "&" || op == "^" || op == "|" || op == ">>" || op == "<<" || op == ">>>")
             return makeFixed!(T, _precisionBits) (cast (T) mixin ("this._value " ~ op ~ " ((cast (real) rhs._value) / rhs._frac)"));
+
+        assert (0);
     }
     private nothrow Fixed intBinaryOps (T2, string op) (T2 rhs) {
         static if (op == "+" || op == "-")
@@ -233,6 +237,8 @@ public:
             return makeFixed!(T, _precisionBits) (cast (T) mixin ("((this._value / this._frac) " ~ op ~ " rhs) * this._frac"));
         else if (op == "*" || op == "/" || op == "&" || op == "^" || op == "|" || op == ">>" || op == "<<" || op == ">>>")
             return makeFixed!(T, _precisionBits) (cast (T) mixin ("this._value " ~ op ~ " cast (T) rhs"));
+
+        assert (0);
     }
     // Integer binary ops:
     pure nothrow Fixed opBinary (string op, T2 :  byte) (T2 rhs) { return intBinaryOps!(T2,  op) (rhs); }
