@@ -25,31 +25,21 @@ module chr_tools.stack;
 /++
  + A generic stack type
 ++/
-public class Stack (T) {
-    private T [] _stackArray;
-    private int _index = 0;
-    private uint _max = 1000;
+public class Stack (T, bool autoGrow = false) {
+    protected T[] _stackArray;
+    protected int _index = 0;
+    protected uint _max = 1000;
 
     /// The current stack index
     @property int index () { return _index; }
     /// The amount of things in the stack
-    @property int count () { return _index + 1; }
-    /// The stack's max
+    @property int count () { return (_index + 1); }
+    /// The stack's maximum capacity
     @property uint max () { return max; }
     /// Whether or not the stack is full
-    @property bool isFull () {
-        if (_index == _max - 1)
-            return true;
-        else
-            return false;
-    }
+    @property bool isFull () { return (_index == _max - 1); }
     /// Whether or not the stack is empty
-    @property bool isEmpty () {
-        if (_index == 0)
-            return true;
-        else
-            return false;
-    }
+    @property bool isEmpty () { return (_index == 0); }
 
     @disable this ();
 
@@ -60,20 +50,21 @@ public class Stack (T) {
         _index = 0;
     }
 
+    /// Implements the concatenation operator.
     Stack opBinary (string op) (Stack!(T) rhs) {
         // Appends the righthand stack to the lefthand stack. If there's not enough space, it resizes the stack
         // The difference between this and push (Stack!(T)) is that this resizes the stack instead of only appending whatever fits
         static if (op == "~") {
-            if (count + s2.count > _max)
-                resize (count + s2.count);
-            _stackArray ~= s2.asArray;
+            if (count + rhs.count > _max)
+                resize (count + rhs.count);
+            _stackArray ~= rhs.asArray;
         } else
-            static assert(0, "Operator " ~ op ~ " not implemented");
+            static assert (0, "Operator " ~ op ~ " not implemented");
     }
 
     /// Resizes the stack
     bool resize (uint sz) {
-        int oldSize = _max;
+        const (int) oldSize = _max;
         _max = sz;
         _stackArray.length = sz;
 
@@ -91,34 +82,50 @@ public class Stack (T) {
 
     /// Inserts a value into the stack
     bool push (T value) {
+        static if (autoGrow) {
+            if ((_index + 1) >= _max)
+                resize (_max + (_max >> 2));
+        } else {
+            if ((_index + 1) >= _max)
+                return false;
+        }
+
         if (_stackArray.length != _max)
             this.resize (_max);
 
-        if (_index + 1 < _max) {
-            _index++;
-            _stackArray [_index] = value;
-            return true;
-        } else {
-            return false;
-        }
+        _index++;
+        _stackArray [_index] = value;
+        return true;
     }
 
     /++
      + Inserts an array of values into the stack
      + Returns: The amount of values inserted
     ++/
-    int push (T [] values) {
+    int push (T[] values) {
+        static if (autoGrow) {
+            const (int) newCount = (_index + values.length);
+            if (newCount >= _max) {
+                int newSize = _max + (_max >> 2);
+
+                if (newCount >= newSize)
+                    newSize = _max + (_max >> 2) + items.length;
+
+                resize (newSize);
+            }
+        }
+
         if (_stackArray.length != _max)
             this.resize (_max);
-        
+
         int i = 0;
 
         for (; i < values.length; i++) {
-            if (_index < _max - 1) {
-                _index++;
-                _stackArray [_index] = values [i];
-            } else
+            if (_index >= _max - 1)
                 break;
+
+            _index++;
+            _stackArray [_index] = values [i];
         }
 
         return i + 1;
@@ -135,24 +142,23 @@ public class Stack (T) {
      +  Returns: The retrieved value or null if the stack is empty
     ++/
     T peek () {
-        if (_index >= 0)
-            return _stackArray [_index];
-        else
+        if (_index < 1)
             return null;
+
+        return _stackArray [_index];
     }
 
     /++ Retrieves a value and removes it from the stack
      +  Returns: The retrieved value or null if the stack is empty
     ++/
     T pop () {
-        if (_index >= 0) {
-            _index--;
-            return _stackArray [_index + 1];
-        } else {
+        if (_index < 1)
             return null;
-        }
+
+        _index--;
+        return _stackArray [_index + 1];
     }
 
     /// Returns the stack's contents as an array
-    T [] asArray () { return _stackArray; }
+    T[] asArray () { return _stackArray.dup; }
 }
