@@ -1,10 +1,10 @@
 {
     "name": "chr_tools",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "A bunch of useful modules written by Chronos Ouroboros",
-    "copyright": "Copyright (C) 2016  Chronos Ouroboros",
+    "copyright": "Copyright (C) 2016-2019 Chronos \"phantombeta\" Ouroboros",
     "authors": ["Chronos Ouroboros"],
-    "license": "GPL-2.0",
+    "license": "LGPL-2.0",
     "targetType": "library",
     "importPaths": [ "src" ],
 
@@ -14,7 +14,7 @@
             "targetType": "library",
         },
         {
-            "name": "docs",            
+            "name": "docs",
             "targetType": "autodetect",
             "targetPath": "docs",
             "buildOptions": [ "syntaxOnly" ],

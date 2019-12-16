@@ -1,6 +1,6 @@
 /*
 **  Chronos Ouroboros' D Tools
-**  Copyright (C) 2016  Chronos Ouroboros
+**  Copyright (C) 2016-2019 Chronos "phantombeta" Ouroboros
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
