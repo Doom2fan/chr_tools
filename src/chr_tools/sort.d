@@ -19,7 +19,7 @@
 
 module chr_tools.sort;
 
-void sortNullsInPlace (T) (T [] arr) {
+void sortNullsInPlace (T) (T[] arr) {
     for (uint i = 0; i < arr.length; i++) {
         if (arr [i] is null) {
             uint j = i;
@@ -37,8 +37,8 @@ void sortNullsInPlace (T) (T [] arr) {
     }
 }
 
-T [] sortNulls (T) (T [] arr) {
-    T [] sortedArr;
+T[] sortNulls (T) (T[] arr) {
+    T[] sortedArr;
     size_t index;
 
     sortedArr.length = arr.length;
