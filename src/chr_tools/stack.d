@@ -22,6 +22,12 @@
 ++/
 module chr_tools.stack;
 
+class StackException : Exception {
+    public this (string message, string file = __FILE__, int _line = __LINE__) {
+        super (message, file, _line);
+    }
+}
+
 /++
  + A generic stack type
 ++/
@@ -109,7 +115,7 @@ public class Stack (T, bool autoGrow = false) {
                 int newSize = _max + (_max >> 2);
 
                 if (newCount >= newSize)
-                    newSize = _max + (_max >> 2) + items.length;
+                    newSize = _max + (_max >> 2) + values.length;
 
                 resize (newSize);
             }
@@ -143,7 +149,7 @@ public class Stack (T, bool autoGrow = false) {
     ++/
     T peek () {
         if (_index < 1)
-            return null;
+            throw new StackException ("Stack is empty");
 
         return _stackArray [_index];
     }
@@ -153,7 +159,7 @@ public class Stack (T, bool autoGrow = false) {
     ++/
     T pop () {
         if (_index < 1)
-            return null;
+            throw new StackException ("Stack is empty");
 
         _index--;
         return _stackArray [_index + 1];
